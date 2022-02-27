@@ -14,6 +14,13 @@ namespace Cab_Invoice_Generator
         private readonly int COST_PER_TIME;
         private readonly double MINIMUM_FARE;
 
+        public InvoiceGenerator()
+        {
+            this.MINIMUM_COST_PER_KM = 10;
+            this.COST_PER_TIME = 1;
+            this.MINIMUM_FARE = 5;
+            this.rideRepository = new RideRepository();
+        }
         public InvoiceGenerator(RideType rideType)
         {
             this.rideType = rideType;
@@ -87,6 +94,20 @@ namespace Cab_Invoice_Generator
 
             }
             return new InvoiceSummary(rides.Length, totalFare);
+        }
+        public void AddRides(string userId, Ride[] rides)
+        {
+            try
+            {
+                rideRepository.AddRide(userId, rides);
+            }
+            catch (CabInvoiceException)
+            {
+                if (rides == null)
+                {
+                    throw new CabInvoiceException(CabInvoiceException.ExceptionType.NULL_RIDES, "Rides are Null");
+                }
+            }
         }
 
         public InvoiceSummary GetInvoiceSummary(String userId)
